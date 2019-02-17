@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace VSIXProject
 {
-    class SolutionEventsListener : IVsSolutionEvents
+    internal sealed class SolutionEventsListener : IVsSolutionEvents
     {
         internal uint Cookie { private get; set; }
 
