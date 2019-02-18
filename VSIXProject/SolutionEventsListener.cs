@@ -77,13 +77,13 @@ namespace VSIXProject
 
         public int OnAfterCloseSolution(object pUnkReserved)
         {
-            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+            //Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
 
-            if (this.Cookie != 0)
-            {
-                // this.solution.UnadviseSolutionEvents(this.Cookie);
-                // this.Cookie = 0;
-            }
+            //if (this.Cookie != 0)
+            //{
+            //    this.solution.UnadviseSolutionEvents(this.Cookie);
+            //    this.Cookie = 0;
+            //}
 
             return VSConstants.S_OK;
         }
