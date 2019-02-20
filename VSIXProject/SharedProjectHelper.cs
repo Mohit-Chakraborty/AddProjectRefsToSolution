@@ -73,15 +73,17 @@ namespace VSIXProject
             Requires.NotNull(solution, nameof(solution));
             Requires.NotNull(projectUniqueName, nameof(projectUniqueName));
 
+            var sharedProjectImportPaths = new List<string>();
+
             // Assumption: The project is loaded.
             int hr = solution.GetProjectOfUniqueName(projectUniqueName, out IVsHierarchy projectHierarchy);
 
             if (ErrorHandler.Failed(hr) || (projectHierarchy == null))
             {
-                throw new ArgumentException("Unknown project - " + projectUniqueName);
-            }
+                PackageHelper.WriteMessage("ERROR. Unknown project - " + projectUniqueName);
 
-            var sharedProjectImportPaths = new List<string>();
+                return sharedProjectImportPaths;
+            }
 
             // If the project is importing Shared projects, get the paths to the .projitems files using the 'VSHPROPID_SharedItemsImportFullPaths' property.
             if (ErrorHandler.Succeeded(projectHierarchy.GetProperty((uint)VSConstants.VSITEMID.Root, (int)__VSHPROPID7.VSHPROPID_SharedItemsImportFullPaths, out object sharedItemImportsObject)) &&
