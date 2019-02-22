@@ -1,5 +1,6 @@
 ﻿using Microsoft;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
@@ -18,18 +19,27 @@ namespace VSIXProject
 
             var projectPaths = new List<string>();
 
-            if (ErrorHandler.Succeeded(solution.GetProjectEnum((uint)__VSENUMPROJFLAGS.EPF_LOADEDINSOLUTION, Guid.Empty, out IEnumHierarchies enumHierarchies)))
+            if (ErrorHandler.Succeeded(solution.GetSolutionInfo(out string solutionDir, out _, out _)) &&
+                ErrorHandler.Succeeded(solution.GetProjectEnum((uint)__VSENUMPROJFLAGS.EPF_LOADEDINSOLUTION, Guid.Empty, out IEnumHierarchies enumHierarchies)))
             {
                 var hierarchy = new IVsHierarchy[1];
 
                 while (ErrorHandler.Succeeded(enumHierarchies.Next(1, hierarchy, out uint countFetched)) && countFetched == 1)
                 {
-                    int hr1 = solution.GetSolutionInfo(out string solutionDir, out _, out _);
-                    int hr2 = solution.GetUniqueNameOfProject(hierarchy[0], out string projectUniqueName);
-
-                    if (ErrorHandler.Succeeded(hr1) && ErrorHandler.Succeeded(hr2))
+                    if (hierarchy[0] is IPersist hierPersist)
                     {
-                        string projectPath = Path.Combine((string)solutionDir, (string)projectUniqueName);
+                        if (ErrorHandler.Succeeded(hierPersist.GetClassID(out Guid classID)) &&
+                            (classID == VSConstants.CLSID.MiscellaneousFilesProject_guid || classID == VSConstants.CLSID.SolutionFolderProject_guid || classID == VSConstants.CLSID.SolutionItemsProject_guid))
+                        {
+                            continue;
+                        }
+                    }
+
+                    int hr = solution.GetUniqueNameOfProject(hierarchy[0], out string projectUniqueName);
+
+                    if (ErrorHandler.Succeeded(hr))
+                    {
+                        string projectPath = Path.Combine(solutionDir, projectUniqueName);
                         projectPaths.Add(projectPath);
                     }
                 }
