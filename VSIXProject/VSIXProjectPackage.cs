@@ -96,14 +96,23 @@ namespace VSIXProject
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
+            var referencedProjectPaths = new List<string>();
+
             try
             {
-                var referencedProjectPaths = ProjectHelper.GetProjectReferencePaths(project.Key);
+                referencedProjectPaths = ProjectHelper.GetProjectReferencePaths(project.Key);
+            }
+            catch (Exception e)
+            {
+                PackageHelper.WriteMessage("*** FAILED to read project references. ***\t" + e.Message);
+            }
 
-                foreach (string referencedProjectPath in referencedProjectPaths)
+            foreach (string referencedProjectPath in referencedProjectPaths)
+            {
+                PackageHelper.WriteMessage(project.Key + "--->" + referencedProjectPath);
+
+                try
                 {
-                    PackageHelper.WriteMessage(project.Key + "--->" + referencedProjectPath);
-
                     var resolvedPath = ProjectHelper.ResolveMacrosInPath(project.Value, referencedProjectPath);
 
                     var newProjectHierarchy = SolutionHelper.AddProjectToSolution(solution, resolvedPath);
@@ -113,10 +122,10 @@ namespace VSIXProject
                         AddProjectReferencesToSolution(solution, new KeyValuePair<string, IVsHierarchy>(resolvedPath, newProjectHierarchy));
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                PackageHelper.WriteMessage("*** FAILED to read project references. ***\t" + e.Message);
+                catch (Exception e)
+                {
+                    PackageHelper.WriteMessage("*** FAILED to resolve project properties. ***\t" +  e.Message);
+                }
             }
 
             SharedProjectHelper.AddSharedProjectReferencesToSolution(solution, project.Key);

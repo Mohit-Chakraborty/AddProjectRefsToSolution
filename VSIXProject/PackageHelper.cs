@@ -23,7 +23,7 @@ namespace VSIXProject
 
             if (GeneralOutputWindowPane == null)
             {
-                GeneralOutputWindowPane = ProjectPackage.GetOutputPane(VSConstants.OutputWindowPaneGuid.GeneralPane_guid, "Add referenced projects to solution");
+                GeneralOutputWindowPane = ProjectPackage?.GetOutputPane(VSConstants.OutputWindowPaneGuid.GeneralPane_guid, "Add referenced projects to solution");
             }
 
             GeneralOutputWindowPane?.Activate();
