@@ -57,9 +57,13 @@ namespace VSIXProject
                 else
                 {
                     PackageHelper.WriteMessage("Adding project to solution: " + sharedProjectPath);
-                    int hr = ((IVsSolution6)solution).AddExistingProject(sharedProjectPath, null, out IVsHierarchy addedProjectHierarchy);
+                    int hr = ((IVsSolution6)solution).AddExistingProject(sharedProjectPath, null, out IVsHierarchy _);
 
-                    if (ErrorHandler.Failed(hr))
+                    if (ErrorHandler.Succeeded(hr))
+                    {
+                        PackageHelper.WriteMessage(string.Empty);
+                    }
+                    else
                     {
                         PackageHelper.WriteMessage("FAILED. hr = " + hr);
                     }
@@ -102,7 +106,7 @@ namespace VSIXProject
                         }
                         else
                         {
-                            PackageHelper.WriteMessage(projectUniqueName + "->" + sharedItemImportPath);
+                            PackageHelper.WriteMessage(projectUniqueName + "--->" + sharedItemImportPath);
 
                             // If the Shared project is not loaded, the .shproj hierarchy is not available.
                             // The shared items import file (.projitems) is available only via .shproj hierarchy.

@@ -11,13 +11,13 @@ namespace VSIXProject
 {
     internal static class SolutionHelper
     {
-        internal static IEnumerable<string> GetPathsOfLoadedProjectsInSolution(IVsSolution solution)
+        internal static IDictionary<string, IVsHierarchy> GetLoadedProjectsInSolution(IVsSolution solution)
         {
             Requires.NotNull(solution, nameof(solution));
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            var projectPaths = new List<string>();
+            var loadedProjects = new Dictionary<string, IVsHierarchy>();
 
             if (ErrorHandler.Succeeded(solution.GetSolutionInfo(out string solutionDir, out _, out _)) &&
                 ErrorHandler.Succeeded(solution.GetProjectEnum((uint)__VSENUMPROJFLAGS.EPF_LOADEDINSOLUTION, Guid.Empty, out IEnumHierarchies enumHierarchies)))
@@ -40,36 +40,42 @@ namespace VSIXProject
                     if (ErrorHandler.Succeeded(hr))
                     {
                         string projectPath = Path.Combine(solutionDir, projectUniqueName);
-                        projectPaths.Add(projectPath);
+                        loadedProjects.Add(projectPath, hierarchy[0]);
                     }
                 }
             }
 
-            return projectPaths;
+            return loadedProjects;
         }
 
-        internal static int AddProjectToSolution(IVsSolution solution, string projectPath)
+        internal static IVsHierarchy AddProjectToSolution(IVsSolution solution, string projectPath)
         {
             Requires.NotNull(solution, nameof(solution));
+            Requires.NotNullOrEmpty(projectPath, nameof(projectPath));
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
             int hr = VSConstants.S_OK;
-            if (ErrorHandler.Succeeded(solution.GetProjectOfUniqueName(projectPath, out _)))
+            if (ErrorHandler.Succeeded(solution.GetProjectOfUniqueName(projectPath, out IVsHierarchy existingProject)))
             {
+                return existingProject;
             }
             else
             {
                 PackageHelper.WriteMessage("Adding project to solution: " + projectPath);
-                hr = ((IVsSolution6)solution).AddExistingProject(projectPath, null, out _);
+                hr = ((IVsSolution6)solution).AddExistingProject(projectPath, null, out IVsHierarchy newProject);
 
-                if (ErrorHandler.Failed(hr))
+                if (ErrorHandler.Succeeded(hr))
+                {
+                    PackageHelper.WriteMessage(string.Empty);
+                    return newProject;
+                }
+                else
                 {
                     PackageHelper.WriteMessage("FAILED. hr = " + hr);
+                    return null;
                 }
             }
-
-            return hr;
         }
     }
 }

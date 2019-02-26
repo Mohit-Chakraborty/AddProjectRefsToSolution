@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Task = System.Threading.Tasks.Task;
@@ -85,27 +84,43 @@ namespace VSIXProject
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            var loadedProjects = SolutionHelper.GetPathsOfLoadedProjectsInSolution(solution);
+            var loadedProjects = SolutionHelper.GetLoadedProjectsInSolution(solution);
 
-            // Collect the full set of transitive project references of all the loaded projects
-            List<string> allReferencedProjectPaths = new List<string>();
-
-            foreach (string loadedProjectPath in loadedProjects)
+            foreach (var loadedProject in loadedProjects)
             {
-                ProjectHelper.CollectProjectReferencePaths(loadedProjectPath, allReferencedProjectPaths);
-                SharedProjectHelper.AddSharedProjectReferencesToSolution(solution, loadedProjectPath);
+                AddProjectReferencesToSolution(solution, loadedProject);
             }
+        }
 
-            foreach (var referencedProjectPath in allReferencedProjectPaths)
+        internal void AddProjectReferencesToSolution(IVsSolution solution, KeyValuePair<string, IVsHierarchy> project)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            try
             {
-                int hr = SolutionHelper.AddProjectToSolution(solution, referencedProjectPath);
+                var referencedProjectPaths = ProjectHelper.GetProjectReferencePaths(project.Key);
 
-                if (ErrorHandler.Succeeded(hr))
+                foreach (string referencedProjectPath in referencedProjectPaths)
                 {
-                    // If the project was added successfully, we can add its Shared project references
-                    SharedProjectHelper.AddSharedProjectReferencesToSolution(solution, referencedProjectPath);
+                    PackageHelper.WriteMessage(project.Key + "--->" + referencedProjectPath);
+
+                    var resolvedPath = ProjectHelper.ResolveMacrosInPath(project.Value, referencedProjectPath);
+
+                    var newProjectHierarchy = SolutionHelper.AddProjectToSolution(solution, resolvedPath);
+
+                    if (newProjectHierarchy != null)
+                    {
+                        AddProjectReferencesToSolution(solution, new KeyValuePair<string, IVsHierarchy>(resolvedPath, newProjectHierarchy));
+                    }
                 }
             }
+            catch (Exception e)
+            {
+                PackageHelper.WriteMessage("*** FAILED to read project references. ***\t" + e.Message);
+            }
+
+            SharedProjectHelper.AddSharedProjectReferencesToSolution(solution, project.Key);
         }
     }
 }
+
