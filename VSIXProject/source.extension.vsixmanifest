@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="AddProjectRefsToSolution.3a2d89f5-7819-4084-806a-554b80e2be50" Version="1.2" Language="en-US" Publisher="Mohit Chakraborty" />
+        <Identity Id="AddProjectRefsToSolution.3a2d89f5-7819-4084-806a-554b80e2be50" Version="1.3" Language="en-US" Publisher="Mohit Chakraborty" />
         <DisplayName>Add Project References To Solution</DisplayName>
         <Description xml:space="preserve">Adds the project references of the loaded projects to the open solution.
 Open a single project in Visual Studio and this extension will look at the project references of the project (in a transitive manner) and add those projects to the solution.

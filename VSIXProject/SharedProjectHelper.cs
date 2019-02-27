@@ -106,7 +106,7 @@ namespace VSIXProject
                         }
                         else
                         {
-                            PackageHelper.WriteMessage(projectUniqueName + "--->" + sharedItemImportPath);
+                            PackageHelper.WriteMessage(System.Environment.NewLine + projectUniqueName + "--->" + sharedItemImportPath);
 
                             // If the Shared project is not loaded, the .shproj hierarchy is not available.
                             // The shared items import file (.projitems) is available only via .shproj hierarchy.

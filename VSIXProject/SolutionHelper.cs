@@ -67,7 +67,6 @@ namespace VSIXProject
 
                 if (ErrorHandler.Succeeded(hr))
                 {
-                    PackageHelper.WriteMessage(string.Empty);
                     return newProject;
                 }
                 else

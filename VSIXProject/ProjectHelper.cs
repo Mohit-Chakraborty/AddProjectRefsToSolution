@@ -12,13 +12,15 @@ namespace VSIXProject
         /// <summary>
         /// Reads the ProjectReference elements in the project XML
         /// </summary>
-        /// <param name="projectPath">Full path to the project file</param>
+        /// <param name="project"><code>KeyValuePair</code> containing the full path to the project file and the project hierarchy</param>
         /// <returns>Collection of project reference paths</returns>
-        internal static List<string> GetProjectReferencePaths(string projectPath)
+        internal static List<string> GetProjectReferencePaths(KeyValuePair<string, IVsHierarchy> project)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var projectReferencePaths = new List<string>();
 
-            using (var fileStream = File.OpenRead(projectPath))
+            using (var fileStream = File.OpenRead(project.Key))
             {
                 using (XmlReader xmlReader = XmlReader.Create(fileStream))
                 {
@@ -32,10 +34,17 @@ namespace VSIXProject
 
                                 if (!string.IsNullOrEmpty(includeValue))
                                 {
-                                    var projectFullPath = Path.Combine(Path.GetDirectoryName(projectPath), includeValue);
+                                    PackageHelper.WriteMessage(System.Environment.NewLine + project.Key + "--->" + includeValue);
+
+                                    var referencedProjectPath = ResolveMacrosInPath(project.Value, includeValue);
+
+                                    if (!Path.IsPathRooted(referencedProjectPath))
+                                    {
+                                        referencedProjectPath = Path.Combine(Path.GetDirectoryName(project.Key), referencedProjectPath);
+                                    }
 
                                     // Save the canonical path of the project.
-                                    projectReferencePaths.Add(new FileInfo(projectFullPath).FullName);
+                                    projectReferencePaths.Add(new FileInfo(referencedProjectPath).FullName);
                                 }
                             }
                         }
@@ -67,7 +76,7 @@ namespace VSIXProject
 
             string resolvedPath = string.Empty;
 
-            while (i > 0)
+            while (i >= 0)
             {
                 var j = path.IndexOf(")", i);
                 resolvedPath += path.Substring(startIndex, i - startIndex);

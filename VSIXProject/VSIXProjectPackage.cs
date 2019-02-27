@@ -100,7 +100,7 @@ namespace VSIXProject
 
             try
             {
-                referencedProjectPaths = ProjectHelper.GetProjectReferencePaths(project.Key);
+                referencedProjectPaths = ProjectHelper.GetProjectReferencePaths(project);
             }
             catch (Exception e)
             {
@@ -109,17 +109,15 @@ namespace VSIXProject
 
             foreach (string referencedProjectPath in referencedProjectPaths)
             {
-                PackageHelper.WriteMessage(project.Key + "--->" + referencedProjectPath);
+                PackageHelper.WriteMessage(string.Empty);
 
                 try
                 {
-                    var resolvedPath = ProjectHelper.ResolveMacrosInPath(project.Value, referencedProjectPath);
-
-                    var newProjectHierarchy = SolutionHelper.AddProjectToSolution(solution, resolvedPath);
+                    var newProjectHierarchy = SolutionHelper.AddProjectToSolution(solution, referencedProjectPath);
 
                     if (newProjectHierarchy != null)
                     {
-                        AddProjectReferencesToSolution(solution, new KeyValuePair<string, IVsHierarchy>(resolvedPath, newProjectHierarchy));
+                        AddProjectReferencesToSolution(solution, new KeyValuePair<string, IVsHierarchy>(referencedProjectPath, newProjectHierarchy));
                     }
                 }
                 catch (Exception e)
