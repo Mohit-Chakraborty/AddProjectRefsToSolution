@@ -1,0 +1,21 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "13:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: Moq
+    versions:
+    - 4.16.0
+  - dependency-name: Microsoft.VisualStudio.Shell.Framework
+    versions:
+    - 16.8.30709.132
+  - dependency-name: Microsoft.VisualStudio.Shell.15.0
+    versions:
+    - 16.8.30709.132
+  - dependency-name: Microsoft.VisualStudio.Imaging
+    versions:
+    - 16.7.30329.63
