@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="AddProjectRefsToSolution.3a2d89f5-7819-4084-806a-554b80e2be50" Version="1.3" Language="en-US" Publisher="Mohit Chakraborty" />
-        <DisplayName>Add Project References To Solution</DisplayName>
+        <Identity Id="AddProjectRefsToSolution.64.3a2d89f5-7819-4084-806a-554b80e2be50" Version="1.0" Language="en-US" Publisher="Mohit Chakraborty" />
+        <DisplayName>Add Project References To Solution (64-bit)</DisplayName>
         <Description xml:space="preserve">Adds the project references of the loaded projects to the open solution.
 Open a single project in Visual Studio and this extension will look at the project references of the project (in a transitive manner) and add those projects to the solution.
-With this, users can avoid creating solutions to create a collection of projects simply to load them all together.</Description>
+With this, users can avoid creating solutions to create a collection of projects simply to load them all together.
+
+NOTE: This extension is targeted at 64-bit VS</Description>
         <Icon>Ks.png</Icon>
         <Tags>Solution, Project, Reference</Tags>
     </Metadata>
     <Installation>
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0, 17.0)" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
     </Installation>
     <Dependencies>
         <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
     </Dependencies>
     <Prerequisites>
-        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.8.27729.1,17.0)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0, 18.0)" DisplayName="Visual Studio core editor" />
     </Prerequisites>
     <Assets>
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />

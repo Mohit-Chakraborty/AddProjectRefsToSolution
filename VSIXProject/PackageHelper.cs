@@ -27,7 +27,7 @@ namespace VSIXProject
             }
 
             GeneralOutputWindowPane?.Activate();
-            GeneralOutputWindowPane?.OutputString(message + System.Environment.NewLine);
+            GeneralOutputWindowPane?.OutputStringThreadSafe(message + System.Environment.NewLine);
         }
     }
 }

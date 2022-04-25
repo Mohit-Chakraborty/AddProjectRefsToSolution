@@ -100,7 +100,7 @@ namespace VSIXProject
                     {
                         // If the Shared project is loaded, its hierarchy (represented by the .shproj file) can be obtained.
                         if (ErrorHandler.Succeeded(projectHierarchy.GetProperty(itemId, (int)__VSHPROPID7.VSHPROPID_SharedProjectHierarchy, out object sharedProjectHierarchyObject)) &&
-                            sharedProjectHierarchyObject is IVsHierarchy sharedProjectHierarchy)
+                            sharedProjectHierarchyObject is IVsHierarchy)
                         {
                             // The shared project is loaded, so we don't add it to the list.
                         }

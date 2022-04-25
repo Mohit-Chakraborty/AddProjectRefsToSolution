@@ -55,7 +55,6 @@ namespace VSIXProject
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            int hr = VSConstants.S_OK;
             if (ErrorHandler.Succeeded(solution.GetProjectOfUniqueName(projectPath, out IVsHierarchy existingProject)))
             {
                 return existingProject;
@@ -63,7 +62,7 @@ namespace VSIXProject
             else
             {
                 PackageHelper.WriteMessage("Adding project to solution: " + projectPath);
-                hr = ((IVsSolution6)solution).AddExistingProject(projectPath, null, out IVsHierarchy newProject);
+                int hr = ((IVsSolution6)solution).AddExistingProject(projectPath, null, out IVsHierarchy newProject);
 
                 if (ErrorHandler.Succeeded(hr))
                 {
